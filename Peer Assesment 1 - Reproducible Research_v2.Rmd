@@ -17,10 +17,11 @@ options(scipen = 1)  # Turn off scientific notations for numbers
 ```{r}
 data <- read.csv("activity.csv", colClasses = c("integer", "Date", "factor"))
 data$month <- as.numeric(format(data$date, "%m"))
-notNA <- na.omit(data)
-rownames(notNA) <- 1:nrow(notNA)
-head(notNA)
-dim(notNA)
+notNA<-na.omit(data)
+stepstotal<-aggregate(steps ~ date, data=data, sum, na.rm=TRUE)
+rownames(stepstotal) <- 1:nrow(stepstotal)
+head(stepstotal)
+dim(stepstotal)
 library(ggplot2)
 library(lattice)
 ```
@@ -32,19 +33,19 @@ For this part of the assignment, you can ignore the missing values in the datase
 1. Make a histogram of the total number of steps taken each day
 
 ```{r}
-ggplot(notNA, aes(date, steps)) + geom_bar(stat = "identity", colour = "steelblue", fill = "steelblue", width = 0.7) + facet_grid(. ~ month, scales = "free") + labs(title = "Histogram of Total Number of Steps Taken Each Day", x = "Date", y = "Total number of steps")
+stepstotal<-aggregate(steps ~ date, data=data, sum, na.rm=TRUE)
+hist(stepstotal$steps, main="Histogram of Total Steps per Day", xlab="day", col="steelblue")
 ```
 
 2. Calculate and report the mean and median of steps taken per day
 
 Mean of steps taken per day:
 ```{r}
-sum_of_steps <- aggregate(notNA$steps, list(Date = notNA$date), FUN = "sum")$x
-mean(sum_of_steps)
+mean(stepstotal$steps)
 ```
 Median of steps taken per day:
 ```{r}
-median(sum_of_steps)
+median(stepstotal$steps)
 ```
 **What is the average daily activity pattern ?**
 
@@ -90,32 +91,27 @@ sum(is.na(new_data))
 3. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day.
 
 ```{r}
-ggplot(new_data, aes(date, steps)) + geom_bar(stat = "identity",
-                                             colour = "steelblue",
-                                             fill = "steelblue",
-                                             width = 0.7) + facet_grid(. ~ month, scales = "free") + labs(title = "Histogram of Total Number of Steps Taken Each Day (no missing data)", x = "Date", y = "Total number of steps")
+stepstotal2<-aggregate(steps ~ date, data=new_data, sum, na.rm=TRUE)
+hist(stepstotal2$steps, main="Histogram of Total Steps by Day (no missing values)", xlab="day", col="steelblue")
 ``` 
 
 4.Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
 ```{r}
-new_steps <- aggregate(new_data$steps, 
-                           list(Date = new_data$date), 
-                           FUN = "sum")$x
-new_mean <- mean(new_steps)
+new_mean <- mean(stepstotal2$steps)
 new_mean
 ```
 
 Median total number of steps taken per day:
 ``` {r}
-new_median <- median(new_steps)
+new_median <- median(stepstotal2$steps)
 new_median
 ```
 
 Compare them with the two before imputing missing data:
 ```{r}
-old_mean <- mean(sum_of_steps)
-old_median <- median(sum_of_steps)
+old_mean <- mean(stepstotal$steps)
+old_median <- median(stepstotal$steps)
 new_mean - old_mean
 new_median - old_median
 ```
